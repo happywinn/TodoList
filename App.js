@@ -2,7 +2,6 @@
 const todoInput = document.querySelector('.todo-input');
 const todoButton = document.querySelector('.todo-button');
 const todoList = document.querySelector('.todoList');
-const filterOption = document.querySelector('.filter-todo');
 
 
 
@@ -10,17 +9,22 @@ const filterOption = document.querySelector('.filter-todo');
 document.addEventListener('DOMContentLoaded', getTodos);
 todoButton.addEventListener('click', addTodo);
 todoList.addEventListener('click', deleteCheck);
-// filterOption.addEventListener('click', filterTodo);
-
 
 // Functions
-count = 0;
+count = 0;   // for pending tasks counting
+var clicked = false;
+var alertDanger;
 function addTodo(event){
     // Prevent form from submitting
     event.preventDefault();
-    count +=1;
+    
     //Todo DIV
     if(!(todoInput.value === "")) {
+        if(alertDanger){
+            alertDanger.remove();
+        }
+
+        count +=1;
         const todoDiv = document.createElement('div');
         todoDiv.classList.add("todo");
         //Create LI
@@ -45,16 +49,19 @@ function addTodo(event){
 
         //Clear Todo Input Value
         todoInput.value = "";
-
-        document.querySelector('.tasks').innerText = "You have "+count+" pending tasks.";
+        document.querySelector('.tasks').innerHTML = "You have "+"<b>"+count+"</b>"+" pending tasks.";
     }
     else {
-        
-        const todoDiv = document.createElement('div');
-        todoDiv.classList.add("alert","alert-danger");   
-        todoDiv.innerText = "Please Enter ToDoList";
-        // Append to List
-        todoList.appendChild(todoDiv);
+        if(!clicked) {  
+            event.preventDefault();
+            alertDanger = document.createElement('div');
+            alertDanger.classList.add("alert","alert-danger");   
+            alertDanger.innerText = "Please Enter ToDoList";
+            // Append to List
+            todoList.appendChild(alertDanger);
+            console.log(count);
+            clicked = true;
+        }
     }
       
 }
@@ -81,35 +88,11 @@ function deleteCheck(e) {
         const todo = item.parentElement;
         todo.classList.toggle("completed");
     }
-
-    document.querySelector('.tasks').innerText = "You have "+count+" pending tasks.";
+    document.querySelector('.tasks').innerHTML = "You have "+"<b>"+count+"</b>"+" pending tasks.";
 }
 
 
-function filterTodo(e) {
-    const todos = todoList.childNodes;
-    todos.forEach(function(todo){
-        switch(e.target.value) {
-            case "all":
-                todo.style.display = "flex";
-                break;
-            case "completed":
-                if(todo.classList.contains('completed')){
-                    todo.style.display = 'flex';
-                }else {
-                    todo.style.display = "none";
-                }
-                break;
-            case "uncompleted":
-                if(!todo.classList.contains('completed')){
-                    todo.style.display = 'flex';
-                }else {
-                    todo.style.display = "none";
-                }
-                break;
-        }
-    });
-}
+
 var todos;
 function saveLocalTodos(todo) {
     console.log("hello");
@@ -153,7 +136,7 @@ function getTodos() {
         todoList.appendChild(todoDiv);
     });
     count = todos.length;
-    document.querySelector('.tasks').innerText = "You have "+count+" pending tasks.";
+    
 }
 
 
